@@ -66,5 +66,16 @@
             </div>
         {% endif %}
     </div>
+
+    <script>
+        (function () {
+            window.onpageshow = function(event) {
+                // 如果发现是从历史记录（回退/前进）中读取的快照，则重载页面
+                if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                    window.location.reload();
+                }
+            };
+        })();
+    </script>
 </body>
 </html>
