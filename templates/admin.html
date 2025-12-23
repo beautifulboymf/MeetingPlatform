@@ -4,39 +4,59 @@
     <meta charset="UTF-8">
     <title>管理员控制台</title>
     <style>
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        .btn { padding: 5px 10px; text-decoration: none; background: #007bff; color: white; border-radius: 3px; }
+        body { font-family: sans-serif; padding: 20px; background-color: #f8f9fa; }
+        table { width: 100%; border-collapse: collapse; background: white; margin-bottom: 30px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #eee; }
+        .btn { padding: 5px 10px; text-decoration: none; color: white; border-radius: 3px; font-size: 13px; }
+        .btn-toggle { background: #007bff; }
+        .btn-delete { background: #dc3545; }
+        .schedule-item { background: #f1f1f1; padding: 5px; margin: 2px 0; border-radius: 3px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
     </style>
 </head>
 <body>
     <h1>管理员控制台</h1>
+    <p><a href="/">返回首页</a></p>
     <table>
         <thead>
             <tr>
                 <th>用户名</th>
-                <th>公司</th>
-                <th>查看权限</th>
-                <th>操作</th>
+                <th>查看名录权限</th>
+                <th>当前已有行程 (可删除)</th>
                 <th>指派新行程</th>
             </tr>
         </thead>
         <tbody>
             {% for user in users %}
+            {% if user.role != 'admin' %}
             <tr>
-                <td>{{ user.username }}</td>
-                <td>{{ user.company }}</td>
-                <td>{{ '✅ 已授权' if user.can_view_others else '❌ 未授权' }}</td>
-                <td><a href="/admin/toggle_view/{{ user.id }}" class="btn">切换权限</a></td>
+                <td><strong>{{ user.username }}</strong><br><small>{{ user.company }}</small></td>
                 <td>
-                    <form action="/admin/add_schedule" method="POST" style="display:flex; gap:5px;">
+                    {{ '✅ 已授权' if user.can_view_others else '❌ 未授权' }}
+                    <br><a href="/admin/toggle_view/{{ user.id }}" class="btn btn-toggle" style="margin-top:5px; display:inline-block;">切换权限</a>
+                </td>
+                <td>
+                    {% if user.schedules %}
+                        {% for s in user.schedules %}
+                        <div class="schedule-item">
+                            <span>{{ s.time }} - {{ s.title }}</span>
+                            <a href="/admin/delete_schedule/{{ s.id }}" class="btn btn-delete" onclick="return confirm('确定删除此行程吗？')">删除</a>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <span style="color:#999;">暂无行程</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form action="/admin/add_schedule" method="POST">
                         <input type="hidden" name="user_id" value="{{ user.id }}">
-                        <input type="text" name="title" placeholder="行程名称" required>
-                        <input type="text" name="time" placeholder="时间" required>
-                        <button type="submit">分派</button>
+                        <input type="text" name="time" placeholder="时间 (如 09:00)" required style="width:100px;"><br>
+                        <input type="text" name="title" placeholder="行程名称" required style="width:100px; margin-top:5px;"><br>
+                        <button type="submit" class="btn btn-toggle" style="margin-top:5px; border:none; cursor:pointer;">确认分派</button>
                     </form>
                 </td>
             </tr>
+            {% endif %}
             {% endfor %}
         </tbody>
     </table>

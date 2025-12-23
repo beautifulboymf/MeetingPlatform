@@ -7,18 +7,26 @@
         body { font-family: sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .nav-container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; width: 400px; }
         .nav-links { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
-        .nav-button { display: block; padding: 12px; background-color: #007bff; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }
-        .logout { background-color: #dc3545; margin-top: 10px; font-size: 14px;}
+        .nav-button { display: block; padding: 12px; background-color: #007bff; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; transition: background 0.3s;}
+        .nav-button:hover { background-color: #0056b3; }
+        .logout { background-color: #dc3545; font-size: 14px;}
+        .welcome { margin-bottom: 20px; color: #555; }
     </style>
 </head>
 <body>
     <div class="nav-container">
         <h1>会议管理平台</h1>
         {% if current_user.is_authenticated %}
-            <p>欢迎回来，{{ current_user.username }} ({{ current_user.role }})</p>
+            <div class="welcome">
+                欢迎回来，<strong>{{ current_user.username }}</strong> ({{ '管理员' if current_user.role == 'admin' else '参会者' }})
+            </div>
             <div class="nav-links">
                 <a href="/view/directory" class="nav-button">查看参会者名录</a>
-                <a href="/view/my-schedule" class="nav-button">我的专属行程</a>
+                
+                {% if current_user.role != 'admin' %}
+                    <a href="/view/my-schedule" class="nav-button">我的专属行程</a>
+                {% endif %}
+
                 {% if current_user.role == 'admin' %}
                     <a href="/admin" class="nav-button" style="background-color: #6c757d;">进入管理后台</a>
                 {% endif %}
@@ -28,7 +36,7 @@
             <p>请先登录以查看会议信息</p>
             <div class="nav-links">
                 <a href="/login" class="nav-button">登录</a>
-                <a href="/register" class="nav-button" style="background-color: #28a745;">注册</a>
+                <a href="/register" class="nav-button" style="background-color: #28a745;">注册账户</a>
             </div>
         {% endif %}
     </div>
