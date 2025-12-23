@@ -1,19 +1,44 @@
-<h1>管理员控制台</h1>
-<table>
-    {% for user in users %}
-    <tr>
-        <td>{{ user.username }}</td>
-        <td>权限：{{ '有' if user.can_view_others else '无' }} 
-            <a href="/admin/toggle_view/{{ user.id }}">[切换]</a>
-        </td>
-        <td>
-            <form action="/admin/add_schedule" method="POST">
-                <input type="hidden" name="user_id" value="{{ user.id }}">
-                <input type="text" name="title" placeholder="行程名">
-                <input type="text" name="time" placeholder="时间">
-                <button type="submit">指派行程</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>管理员控制台</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .btn { padding: 5px 10px; text-decoration: none; background: #007bff; color: white; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>管理员控制台</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>用户名</th>
+                <th>公司</th>
+                <th>查看权限</th>
+                <th>操作</th>
+                <th>指派新行程</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.company }}</td>
+                <td>{{ '✅ 已授权' if user.can_view_others else '❌ 未授权' }}</td>
+                <td><a href="/admin/toggle_view/{{ user.id }}" class="btn">切换权限</a></td>
+                <td>
+                    <form action="/admin/add_schedule" method="POST" style="display:flex; gap:5px;">
+                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                        <input type="text" name="title" placeholder="行程名称" required>
+                        <input type="text" name="time" placeholder="时间" required>
+                        <button type="submit">分派</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

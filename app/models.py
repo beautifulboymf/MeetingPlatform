@@ -7,7 +7,7 @@ class User(db.Model):
     position = db.Column(db.String(50))
     can_view_others = db.Column(db.Boolean, default=False)
     is_checked_in = db.Column(db.Boolean, default=False)
-    # 建立与行程的关联
+    # 建立与行程的一对多关联
     schedules = db.relationship('PersonalSchedule', backref='user', lazy=True)
 
     def to_dict(self):

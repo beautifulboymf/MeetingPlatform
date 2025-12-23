@@ -1,12 +1,34 @@
-<div id="schedule-list">加载中...</div>
-<script>
-    const userId = new URLSearchParams(window.location.search).get('user_id');
-    async function loadSchedule() {
-        const res = await fetch(`/api/my-schedule/${userId}`);
-        const data = await res.json();
-        document.getElementById('schedule-list').innerHTML = data.map(s => 
-            `<p><b>${s.time}</b>: ${s.title}</p>`).join('') || '暂无专属行程';
-    }
-    loadSchedule();
-    setInterval(loadSchedule, 5000); // 实时更新
-</script>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>我的专属行程</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .event { border-left: 4px solid #007bff; padding: 10px; margin: 10px 0; background: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <h1>我的个人参会行程</h1>
+    <div id="schedule-container">正在同步最新行程...</div>
+
+    <script>
+        const userId = new URLSearchParams(window.location.search).get('user_id');
+        async function fetchSchedule() {
+            if (!userId) return;
+            try {
+                const response = await fetch(`/api/my-schedule/${userId}`);
+                const data = await response.json();
+                let html = data.length ? '' : '<p>暂无专属行程安排</p>';
+                data.forEach(item => {
+                    html += `<div class="event"><strong>${item.time}</strong> - ${item.title}</div>`;
+                });
+                document.getElementById('schedule-container').innerHTML = html;
+            } catch (e) { console.error("同步失败"); }
+        }
+        fetchSchedule();
+        setInterval(fetchSchedule, 5000);
+    </script>
+</body>
+</html>
+
