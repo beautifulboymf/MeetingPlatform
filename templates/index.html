@@ -25,10 +25,12 @@
         .btn-schedule:hover { background-color: #73d13d; transform: translateY(-2px); }
         .btn-admin { background-color: var(--admin-color); }
         .btn-admin:hover { background-color: #9254de; transform: translateY(-2px); }
-        .btn-logout { color: var(--danger-color); border: 1px solid var(--danger-color); margin-top: 16px; font-size: 14px; }
+        .btn-logout { color: var(--danger-color); border: 1px solid var(--danger-color); font-size: 14px; margin-top: 8px; }
         .btn-logout:hover { background: #fff1f0; }
         .btn-login { background-color: var(--primary-color); }
         .btn-register { border: 1px solid var(--success-color); color: var(--success-color); }
+        .change-pass-link { font-size: 13px; color: #8c8c8c; text-decoration: none; margin-top: 10px; display: inline-block; }
+        .change-pass-link:hover { color: var(--primary-color); }
     </style>
 </head>
 <body>
@@ -51,7 +53,11 @@
                 {% if current_user.role == 'admin' %}
                     <a href="/admin" class="nav-button btn-admin">进入管理后台</a>
                 {% endif %}
-                <a href="/logout" class="nav-button btn-logout">退出登录</a>
+                
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                    <a href="{{ url_for('auth.change_password') }}" class="change-pass-link">⚙ 修改账户密码</a>
+                    <a href="/logout" class="nav-button btn-logout" style="width: 100%; box-sizing: border-box;">退出登录</a>
+                </div>
             </div>
         {% else %}
             <div class="nav-links">
