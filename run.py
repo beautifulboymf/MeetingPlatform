@@ -1,6 +1,9 @@
 from app import create_app, db
 from app.models import User
+import sys
+import os
 
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 app = create_app()
 
 @app.cli.command("init-db")
