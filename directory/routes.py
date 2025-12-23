@@ -1,8 +1,13 @@
+import os
 from flask import Blueprint, jsonify, request, render_template
 from app.models import User
 from app import db
 
-directory_bp = Blueprint('directory', __name__)
+directory_bp = Blueprint(
+    'directory', 
+    __name__, 
+    template_folder='../app/templates'
+)
 
 @directory_bp.route('/view/directory')
 def view_directory():

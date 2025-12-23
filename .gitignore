@@ -1,0 +1,15 @@
+# Python 编译文件
+__pycache__/
+*.py[cod]
+
+# 虚拟环境
+venv/
+.venv/
+env/
+
+# 数据库
+*.db
+instance/
+
+# 配置文件（如果包含密钥）
+config.py
