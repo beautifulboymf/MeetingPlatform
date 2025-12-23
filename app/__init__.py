@@ -33,5 +33,12 @@ def create_app():
         print(f"❌ 蓝图注册失败: {e}")
         # 在开发阶段，建议直接抛出错误以便调试
         raise e 
+    
+    from directory.routes import directory_bp
+    from schedule.routes import schedule_bp
+    from admin.routes import admin_bp
 
-    return app
+    app.register_blueprint(directory_bp)
+    app.register_blueprint(schedule_bp)
+    app.register_blueprint(admin_bp)
+    return 

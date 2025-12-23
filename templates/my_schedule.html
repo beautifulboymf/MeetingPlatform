@@ -1,0 +1,12 @@
+<div id="schedule-list">加载中...</div>
+<script>
+    const userId = new URLSearchParams(window.location.search).get('user_id');
+    async function loadSchedule() {
+        const res = await fetch(`/api/my-schedule/${userId}`);
+        const data = await res.json();
+        document.getElementById('schedule-list').innerHTML = data.map(s => 
+            `<p><b>${s.time}</b>: ${s.title}</p>`).join('') || '暂无专属行程';
+    }
+    loadSchedule();
+    setInterval(loadSchedule, 5000); // 实时更新
+</script>

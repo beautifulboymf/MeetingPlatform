@@ -1,0 +1,19 @@
+<h1>管理员控制台</h1>
+<table>
+    {% for user in users %}
+    <tr>
+        <td>{{ user.username }}</td>
+        <td>权限：{{ '有' if user.can_view_others else '无' }} 
+            <a href="/admin/toggle_view/{{ user.id }}">[切换]</a>
+        </td>
+        <td>
+            <form action="/admin/add_schedule" method="POST">
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <input type="text" name="title" placeholder="行程名">
+                <input type="text" name="time" placeholder="时间">
+                <button type="submit">指派行程</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
