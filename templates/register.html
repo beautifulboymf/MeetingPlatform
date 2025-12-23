@@ -1,12 +1,55 @@
 <!DOCTYPE html>
 <html lang="zh">
-<head><meta charset="UTF-8"><title>用户注册</title></head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户注册 - 会议管理平台</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .register-container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        h2 { color: #333; margin-bottom: 25px; font-weight: 600; }
+        .flash-messages { list-style: none; padding: 0; margin-bottom: 20px; }
+        .flash-messages li { background-color: #fff2f0; border: 1px solid #ffccc7; color: #ff4d4f; padding: 10px; border-radius: 6px; font-size: 14px; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; color: #555; font-size: 14px; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #d9d9d9; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: all 0.3s; }
+        .form-group input:focus { border-color: #52c41a; box-shadow: 0 0 0 2px rgba(82,196,26,0.2); outline: none; }
+        .register-btn { width: 100%; padding: 12px; background-color: #52c41a; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        .register-btn:hover { background-color: #73d13d; }
+        .login-link { margin-top: 20px; font-size: 14px; color: #888; }
+        .login-link a { color: #1890ff; text-decoration: none; }
+        .login-link a:hover { text-decoration: underline; }
+    </style>
+</head>
 <body>
-    <h2>新用户注册</h2>
-    <form method="POST">
-        <p><input type="text" name="username" placeholder="用户名" required></p>
-        <p><input type="password" name="password" placeholder="密码" required></p>
-        <button type="submit">提交注册</button>
-    </form>
+    <div class="register-container">
+        <h2>新用户注册</h2>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for msg in messages %}
+                        <li>{{ msg }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="form-group">
+                <label>用户名</label>
+                <input type="text" name="username" placeholder="设置您的登录用户名" required>
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" name="password" placeholder="设置登录密码" required>
+            </div>
+            <button type="submit" class="register-btn">确认注册</button>
+        </form>
+
+        <div class="login-link">
+            已有账号？<a href="/login">返回登录</a>
+        </div>
+    </div>
 </body>
 </html>

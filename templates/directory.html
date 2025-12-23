@@ -14,10 +14,12 @@
         .info p { margin: 5px 0 0; color: #666; font-size: 14px; }
         .status { font-size: 12px; padding: 4px 8px; border-radius: 12px; background: #28a745; color: white; }
         .error-msg { color: red; text-align: center; padding: 20px; }
+        .back-link { display: block; margin-bottom: 15px; color: #007bff; text-decoration: none; font-size: 14px; }
     </style>
 </head>
 <body>
     <div class="container">
+        <a href="/" class="back-link">← 返回首页</a>
         <h1>参会者实时名录</h1>
         <div id="attendee-container" class="attendee-list">
             <p style="text-align:center;">正在加载参会者数据...</p>
@@ -25,18 +27,10 @@
     </div>
 
     <script>
-        // 从 URL 获取当前用户 ID (模拟登录)
-        const urlParams = new URLSearchParams(window.location.search);
-        const userId = urlParams.get('user_id');
-
         async function fetchAttendees() {
-            if (!userId) {
-                document.getElementById('attendee-container').innerHTML = '<p class="error-msg">错误：未提供 user_id，无法验证权限。</p>';
-                return;
-            }
-
             try {
-                const response = await fetch(`/api/directory?user_id=${userId}`);
+                // 核心修复：直接访问 API，不需要手动传 user_id
+                const response = await fetch('/api/directory');
                 const data = await response.json();
 
                 if (!response.ok) {
@@ -68,7 +62,7 @@
 
         // 初始加载
         fetchAttendees();
-        // 每 10 秒定时刷新，实现“实时”效果
+        // 每 10 秒定时刷新
         setInterval(fetchAttendees, 10000);
     </script>
 </body>
