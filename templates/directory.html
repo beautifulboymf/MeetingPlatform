@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>会议参会者实时名录</title>
+    <style>
+        body { font-family: "Microsoft YaHei", sans-serif; background-color: #f4f7f6; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        .attendee-list { margin-top: 20px; }
+        .attendee-card { border-bottom: 1px solid #eee; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .attendee-card:last-child { border-bottom: none; }
+        .info h3 { margin: 0; color: #007bff; }
+        .info p { margin: 5px 0 0; color: #666; font-size: 14px; }
+        .status { font-size: 12px; padding: 4px 8px; border-radius: 12px; background: #28a745; color: white; }
+        .error-msg { color: red; text-align: center; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>参会者实时名录</h1>
+        <div id="attendee-container" class="attendee-list">
+            <p style="text-align:center;">正在加载参会者数据...</p>
+        </div>
+    </div>
+
+    <script>
+        // 从 URL 获取当前用户 ID (模拟登录)
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('user_id');
+
+        async function fetchAttendees() {
+            if (!userId) {
+                document.getElementById('attendee-container').innerHTML = '<p class="error-msg">错误：未提供 user_id，无法验证权限。</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/directory?user_id=${userId}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    document.getElementById('attendee-container').innerHTML = `<p class="error-msg">${data.error || '获取数据失败'}</p>`;
+                    return;
+                }
+
+                let html = '';
+                if (data.length === 0) {
+                    html = '<p style="text-align:center;">暂无已签到的参会者。</p>';
+                } else {
+                    data.forEach(person => {
+                        html += `
+                            <div class="attendee-card">
+                                <div class="info">
+                                    <h3>${person.username}</h3>
+                                    <p>${person.company} · ${person.position}</p>
+                                </div>
+                                <span class="status">已入场</span>
+                            </div>
+                        `;
+                    });
+                }
+                document.getElementById('attendee-container').innerHTML = html;
+            } catch (error) {
+                document.getElementById('attendee-container').innerHTML = '<p class="error-msg">网络请求失败，请稍后重试。</p>';
+            }
+        }
+
+        // 初始加载
+        fetchAttendees();
+        // 每 10 秒定时刷新，实现“实时”效果
+        setInterval(fetchAttendees, 10000);
+    </script>
+</body>
+</html>

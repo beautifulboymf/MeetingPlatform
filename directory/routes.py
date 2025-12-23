@@ -6,7 +6,7 @@ from app import db
 directory_bp = Blueprint(
     'directory', 
     __name__, 
-    template_folder='../app/templates'
+    template_folder='../templates'
 )
 
 @directory_bp.route('/view/directory')
