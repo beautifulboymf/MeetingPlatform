@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head><meta charset="UTF-8"><title>用户登录</title></head>
+<body>
+    <h2>系统登录</h2>
+    {% with messages = get_flashed_messages() %}{% if messages %}<ul>{% for msg in messages %}<li>{{ msg }}</li>{% endfor %}</ul>{% endif %}{% endwith %}
+    <form method="POST">
+        <p><input type="text" name="username" placeholder="用户名" required></p>
+        <p><input type="password" name="password" placeholder="密码" required></p>
+        <button type="submit">立即登录</button>
+    </form>
+    <p>还没有账号？<a href="/register">立即注册</a></p>
+</body>
+</html>

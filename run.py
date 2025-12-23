@@ -8,19 +8,22 @@ app = create_app()
 
 @app.cli.command("init-db")
 def init_db():
-    """初始化数据库并添加测试数据"""
+    db.drop_all()
     db.create_all()
-    # 创建三个测试用户
-    # 1. 有权限的VIP
-    u1 = User(username="张三", company="科技公司", position="CEO", can_view_others=True, is_checked_in=True)
-    # 2. 无权限的普通参会者
-    u2 = User(username="李四", company="商贸公司", position="经理", can_view_others=False, is_checked_in=True)
-    # 3. 未签到的用户（名录不显示）
-    u3 = User(username="王五", company="制造工厂", position="技术员", can_view_others=True, is_checked_in=False)
     
-    db.session.add_all([u1, u2, u3])
+    # 预设管理员账户
+    admin = User(username="张三", company="科技公司", position="CEO", role="admin", can_view_others=True)
+    admin.set_password("admin123")
+    
+    # 预设普通参会者
+    user = User(username="李四", company="商贸公司", position="经理", role="user", is_checked_in=True)
+    user.set_password("user123")
+    
+    db.session.add_all([admin, user])
     db.session.commit()
-    print("数据库初始化完成，测试数据已插入。")
+    print("数据库重置完成。")
+    print("管理员账号：张三 密码：admin123")
+    print("普通账号：李四 密码：user123")
 
 if __name__ == '__main__':
     app.run(debug=True)

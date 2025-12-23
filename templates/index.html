@@ -4,26 +4,33 @@
     <meta charset="UTF-8">
     <title>会议管理平台 - 首页</title>
     <style>
-        body { font-family: "Microsoft YaHei", sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        body { font-family: sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .nav-container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; width: 400px; }
-        h1 { color: #333; margin-bottom: 30px; }
-        .nav-links { display: flex; flex-direction: column; gap: 15px; }
-        .nav-button { display: block; padding: 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; transition: background 0.3s; }
-        .nav-button:hover { background-color: #0056b3; }
-        .admin-link { background-color: #6c757d; }
-        .admin-link:hover { background-color: #5a6268; }
-        p { color: #666; font-size: 14px; margin-top: 20px; }
+        .nav-links { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .nav-button { display: block; padding: 12px; background-color: #007bff; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }
+        .logout { background-color: #dc3545; margin-top: 10px; font-size: 14px;}
     </style>
 </head>
 <body>
     <div class="nav-container">
         <h1>会议管理平台</h1>
-        <div class="nav-links">
-            <a href="/view/directory?user_id=1" class="nav-button">查看参会者名录</a>
-            <a href="/view/my-schedule?user_id=1" class="nav-button">我的专属行程</a>
-            <a href="/admin" class="nav-button admin-link">进入管理后台</a>
-        </div>
-        <p>当前模拟身份：张三 (VIP)</p>
+        {% if current_user.is_authenticated %}
+            <p>欢迎回来，{{ current_user.username }} ({{ current_user.role }})</p>
+            <div class="nav-links">
+                <a href="/view/directory" class="nav-button">查看参会者名录</a>
+                <a href="/view/my-schedule" class="nav-button">我的专属行程</a>
+                {% if current_user.role == 'admin' %}
+                    <a href="/admin" class="nav-button" style="background-color: #6c757d;">进入管理后台</a>
+                {% endif %}
+                <a href="/logout" class="nav-button logout">退出登录</a>
+            </div>
+        {% else %}
+            <p>请先登录以查看会议信息</p>
+            <div class="nav-links">
+                <a href="/login" class="nav-button">登录</a>
+                <a href="/register" class="nav-button" style="background-color: #28a745;">注册</a>
+            </div>
+        {% endif %}
     </div>
 </body>
 </html>
