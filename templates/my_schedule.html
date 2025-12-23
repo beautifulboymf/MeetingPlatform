@@ -2,45 +2,43 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的专属行程</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f8f9fa; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .event { border-left: 4px solid #007bff; padding: 15px; margin: 15px 0; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .event strong { display: block; color: #007bff; margin-bottom: 5px; }
-        .back-link { display: block; margin-bottom: 15px; color: #007bff; text-decoration: none; font-size: 14px; }
+        body { font-family: sans-serif; background-color: #f8f9fa; padding: 20px; margin: 0; }
+        .container { max-width: 500px; margin: 0 auto; background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f2f5; margin-bottom: 20px; padding-bottom: 10px; }
+        .header h1 { font-size: 20px; margin: 0; }
+        .event-box { border-left: 4px solid #52c41a; background: #fbfcfb; padding: 16px; margin: 12px 0; border-radius: 0 8px 8px 0; }
+        .time { font-weight: bold; color: #52c41a; font-size: 14px; display: block; margin-bottom: 4px; }
+        .title { color: #333; font-size: 16px; font-weight: 500; }
+        .sync-indicator { font-size: 11px; color: #bfbfbf; text-align: center; margin-top: 20px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="/" class="back-link">← 返回首页</a>
-        <h1>我的个人参会行程</h1>
-        <div id="schedule-container">正在同步最新行程...</div>
+        <div class="header">
+            <h1>参会排程</h1>
+            <a href="/" style="color: #1890ff; font-size: 14px; text-decoration: none;">首页</a>
+        </div>
+        <div id="schedule-container">正在获取最新日程...</div>
+        <div class="sync-indicator">● 已与服务器同步</div>
     </div>
-
     <script>
         async function fetchSchedule() {
+            const container = document.getElementById('schedule-container');
             try {
-                // 核心修复：访问正确的 API 路径
                 const response = await fetch('/api/my-schedule');
                 const data = await response.json();
-                
-                let html = '';
-                if (data.length === 0) {
-                    html = '<p style="text-align:center; color: #999;">暂无专属行程安排</p>';
-                } else {
-                    data.forEach(item => {
-                        html += `<div class="event"><strong>时间：${item.time}</strong>项目：${item.title}</div>`;
-                    });
-                }
-                document.getElementById('schedule-container').innerHTML = html;
-            } catch (e) { 
-                document.getElementById('schedule-container').innerHTML = '<p style="color:red;">同步失败，请检查网络</p>';
-            }
+                container.innerHTML = data.length ? data.map(item => `
+                    <div class="event-box">
+                        <span class="time">${item.time}</span>
+                        <span class="title">${item.title}</span>
+                    </div>
+                `).join('') : '<p style="text-align:center; color:#999; padding:20px;">当前无专属日程</p>';
+            } catch (e) { container.innerHTML = '<p style="color:red;">同步失败</p>'; }
         }
-        
         fetchSchedule();
-        // 每 5 秒自动检查是否有管理员新加的行程
         setInterval(fetchSchedule, 5000);
     </script>
 </body>

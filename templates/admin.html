@@ -1,64 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>管理员控制台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 会议管理平台</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f8f9fa; }
-        table { width: 100%; border-collapse: collapse; background: white; margin-bottom: 30px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #eee; }
-        .btn { padding: 5px 10px; text-decoration: none; color: white; border-radius: 3px; font-size: 13px; }
-        .btn-toggle { background: #007bff; }
-        .btn-delete { background: #dc3545; }
-        .schedule-item { background: #f1f1f1; padding: 5px; margin: 2px 0; border-radius: 3px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+        body { font-family: -apple-system, sans-serif; background-color: #f0f2f5; padding: 30px; margin: 0; }
+        .admin-card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); max-width: 1000px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        
+        /* 定义状态颜色类，避免在 style 属性中写 Jinja 逻辑 */
+        .status-authorized { color: #52c41a; font-weight: bold; font-size: 14px; }
+        .status-unauthorized { color: #bfbfbf; font-weight: bold; font-size: 14px; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 16px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+        th { background: #fafafa; font-weight: 600; color: #555; }
+        .btn { padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; border: none; cursor: pointer; transition: all 0.3s; display: inline-block; }
+        .btn-blue { background: #1890ff; color: white; }
+        .btn-red { background: #ff4d4f; color: white; padding: 2px 8px; border-radius: 4px; }
+        .schedule-pill { display: flex; justify-content: space-between; align-items: center; background: #f5f5f5; padding: 6px 10px; border-radius: 6px; margin-bottom: 6px; font-size: 12px; border: 1px solid #e8e8e8; }
+        .add-form { display: flex; flex-direction: column; gap: 8px; width: 160px; }
+        input[type="text"] { padding: 8px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 13px; width: 100%; box-sizing: border-box; }
     </style>
 </head>
 <body>
-    <h1>管理员控制台</h1>
-    <p><a href="/">返回首页</a></p>
-    <table>
-        <thead>
-            <tr>
-                <th>用户名</th>
-                <th>查看名录权限</th>
-                <th>当前已有行程 (可删除)</th>
-                <th>指派新行程</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
-            {% if user.role != 'admin' %}
-            <tr>
-                <td><strong>{{ user.username }}</strong><br><small>{{ user.company }}</small></td>
-                <td>
-                    {{ '✅ 已授权' if user.can_view_others else '❌ 未授权' }}
-                    <br><a href="/admin/toggle_view/{{ user.id }}" class="btn btn-toggle" style="margin-top:5px; display:inline-block;">切换权限</a>
-                </td>
-                <td>
-                    {% if user.schedules %}
-                        {% for s in user.schedules %}
-                        <div class="schedule-item">
-                            <span>{{ s.time }} - {{ s.title }}</span>
-                            <a href="/admin/delete_schedule/{{ s.id }}" class="btn btn-delete" onclick="return confirm('确定删除此行程吗？')">删除</a>
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <span style="color:#999;">暂无行程</span>
-                    {% endif %}
-                </td>
-                <td>
-                    <form action="/admin/add_schedule" method="POST">
-                        <input type="hidden" name="user_id" value="{{ user.id }}">
-                        <input type="text" name="time" placeholder="时间 (如 09:00)" required style="width:100px;"><br>
-                        <input type="text" name="title" placeholder="行程名称" required style="width:100px; margin-top:5px;"><br>
-                        <button type="submit" class="btn btn-toggle" style="margin-top:5px; border:none; cursor:pointer;">确认分派</button>
-                    </form>
-                </td>
-            </tr>
-            {% endif %}
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="admin-card">
+        <div class="header">
+            <h1 style="font-size: 24px; margin: 0;">系统管理员中心</h1>
+            <a href="{{ url_for('main.index') }}" style="color:#1890ff; text-decoration:none; font-size: 14px;">返回首页</a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 20%;">用户信息</th>
+                    <th style="width: 20%;">名录权限</th>
+                    <th style="width: 35%;">现有日程</th>
+                    <th style="width: 25%;">指派操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                {% if user.role != 'admin' %}
+                <tr>
+                    <td>
+                        <strong>{{ user.username }}</strong><br>
+                        <small style="color:#999;">{{ user.company }}</small>
+                    </td>
+                    <td>
+                        <span class="{{ 'status-authorized' if user.can_view_others else 'status-unauthorized' }}">
+                            {{ '● 已授权' if user.can_view_others else '○ 未授权' }}
+                        </span><br>
+                        <a href="{{ url_for('admin.toggle_view', user_id=user.id) }}" class="btn btn-blue" style="font-size:11px; margin-top:8px;">切换状态</a>
+                    </td>
+                    <td>
+                        {% if user.schedules %}
+                            {% for s in user.schedules %}
+                            <div class="schedule-pill">
+                                <span><strong>{{ s.time }}</strong> {{ s.title }}</span>
+                                <a href="{{ url_for('admin.delete_schedule', schedule_id=s.id) }}" class="btn-red" onclick="return confirm('确定删除？')">×</a>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <span style="color: #ccc; font-size: 13px;">暂无行程</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form action="{{ url_for('admin.add_schedule') }}" method="POST" class="add-form">
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <input type="text" name="time" placeholder="时间 (如 09:30)" required>
+                            <input type="text" name="title" placeholder="事项名称" required>
+                            <button type="submit" class="btn btn-blue">立即指派</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
