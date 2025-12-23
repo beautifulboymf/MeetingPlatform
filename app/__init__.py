@@ -31,10 +31,12 @@ def create_app():
         from directory.routes import directory_bp
         from schedule.routes import schedule_bp
         from admin.routes import admin_bp
+        from main.routes import main_bp
 
         app.register_blueprint(directory_bp)
         app.register_blueprint(schedule_bp)
         app.register_blueprint(admin_bp)
+        app.register_blueprint(main_bp)
         print("✅ 成功注册所有蓝图: directory, schedule, admin")
     except ImportError as e:
         print(f"❌ 蓝图注册失败: {e}")
